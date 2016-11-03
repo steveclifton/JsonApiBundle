@@ -37,7 +37,13 @@ class JsonApiRequest
      */
     public function getFilters()
     {
-        return $this->request->query->get('filters', []);
+        $filters = $this->request->query->get('filters', []);
+        
+        foreach($filters as $key => $value) {
+            $filters[$key] = array_map('trim', explode(',', $value));
+        }
+
+        return $filters;
     }
 
     /**
