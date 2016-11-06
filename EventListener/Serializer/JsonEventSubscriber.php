@@ -211,7 +211,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
                 $visitor->addData('relationships', $relationships);
             }
 
-            if ($metadata->getResource() && true === $metadata->getResource()->getShowLinkSelf()) {
+            if ($metadata->getResource() && true === $metadata->getResource()->getShowLinkSelf() && $this->getId($metadata, $object)) {
                 $visitor->addData('links', array(self::LINK_SELF => $this->generateUrlSelf($metadata, $object)));
             }
 
