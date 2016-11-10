@@ -253,9 +253,9 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
         $rs = parent::endVisitingObject($metadata, $data, $type, $context);
 
-        if ($context->getDepth() > 0) {
-            return $rs;
-        }
+//        if ($context->getDepth() > 0) {
+//            return $rs;
+//        }
         
         if ($rs instanceof \ArrayObject) {
             $rs = [];
@@ -264,7 +264,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
             return $rs;
         }
 
-        if (null === $jsonApiMetadata) {
+        if (null === $jsonApiMetadata || null === $jsonApiMetadata->getResource()) {
             return $rs;
         }
 
@@ -323,32 +323,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
             }
         }
 
-        $resource =
-        [
-            'id' => $relationshipData['id'],
-            'type' => $jsonApiMetadata->getResource()->getType(),
-            'attributes' => array_filter($relationshipData, function($key) {
-                switch ($key) {
-                    case 'id':
-                    case 'type':
-                    case 'relationships':
-                    case JsonEventSubscriber::EXTRA_DATA_KEY:
-                    case 'links':
-                        return false;
-                }
-                return true;
-            }, ARRAY_FILTER_USE_KEY)
-        ];
-            
-        if (isset($relationshipData['relationships'])) {
-            $resource['relationships'] = $relationshipData['relationships'];
-        }
-
-        if (isset($relationshipData['links'])) {
-            $resource['links'] = $relationshipData['links'];
-        }
-
-        $this->includedResources[] = $resource;
+        $this->includedResources[] = $relationshipData;
     }
 
     /**
