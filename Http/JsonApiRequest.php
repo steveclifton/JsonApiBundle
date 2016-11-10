@@ -71,7 +71,7 @@ class JsonApiRequest
     {
         $pagination = $this->request->query->get('page', []);
         
-        return isset($pagination['limit']) ? $pagination['limit'] : $default;
+        return isset($pagination['limit']) ? (int) $pagination['limit'] : $default;
     }
     
     /**
@@ -81,7 +81,7 @@ class JsonApiRequest
     {
         $pagination = $this->request->query->get('page', []);
 
-        return isset($pagination['offset']) ? $pagination['offset'] : 0;
+        return isset($pagination['offset']) ? (int) $pagination['offset'] : 0;
     }
 
     /**

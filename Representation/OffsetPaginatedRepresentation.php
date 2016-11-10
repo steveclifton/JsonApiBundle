@@ -55,6 +55,15 @@ class OffsetPaginatedRepresentation extends ArrayCollection
         $this->self = $self;
     }
 
+    /**
+     * @param integer $page
+     * @return string
+     */
+    public function getUriForPage($page)
+    {
+        return $this->self . '?offset=' . ($this->limit * $page - $this->limit) . '&limit=' . $this->limit;
+    }
+
     public function setElements(array $elements)
     {
         foreach ($elements as $element) {

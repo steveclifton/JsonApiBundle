@@ -40,7 +40,6 @@ use Traversable;
 class JsonEventSubscriber implements EventSubscriberInterface
 {
     const EXTRA_DATA_KEY = '__DATA__';
-
     const LINK_SELF = 'self';
     const LINK_RELATED = 'related';
 
@@ -126,9 +125,10 @@ class JsonEventSubscriber implements EventSubscriberInterface
         $visitor = $event->getVisitor();
         $object = $event->getObject();
         $context = $event->getContext();
+        $className = get_class($object);
 
         /** @var ClassMetadata $metadata */
-        $metadata = $this->hateoasMetadataFactory->getMetadataForClass(get_class($object));
+        $metadata = $this->hateoasMetadataFactory->getMetadataForClass($className);
 
         // if it has no json api metadata, skip it
         if (null === $metadata || !$metadata->getResource()) {
@@ -136,7 +136,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
         }
 
         /** @var JmsClassMetadata $jmsMetadata */
-        $jmsMetadata = $this->jmsMetadataFactory->getMetadataForClass(get_class($object));
+        $jmsMetadata = $this->jmsMetadataFactory->getMetadataForClass($className);
 
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
