@@ -412,7 +412,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
 
-        return $propertyAccessor->getValue($object, $classMetadata->getIdField());
+        return (string) $propertyAccessor->getValue($object, $classMetadata->getIdField());
     }
 
     /**

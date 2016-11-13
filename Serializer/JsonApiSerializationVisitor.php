@@ -215,7 +215,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
                 
                 $data[] = [
                     'type' => $propertyMetadata->getResource()->getType(),
-                    'id' => $propertyMetadata->getIdValue($v)
+                    'id' => (string) $propertyMetadata->getIdValue($v)
                 ];
 
                 if ($relationship->isIncludedByDefault()) {
@@ -229,7 +229,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
             $data = [
                 'type' => $propertyMetadata->getResource()->getType(),
-                'id' => $propertyMetadata->getIdValue($propertyData)
+                'id' => (string) $propertyMetadata->getIdValue($propertyData)
             ];
             if ($relationship->isIncludedByDefault()) {
                 if (null === $includeMaxDepth || $context->getDepth() < $includeMaxDepth) {
@@ -274,7 +274,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
         $idField = $jsonApiMetadata->getIdField();
 
-        $result['id'] = isset($rs[$idField]) ? $rs[$idField] : null;
+        $result['id'] = isset($rs[$idField]) ? (string) $rs[$idField] : null;
         
         $result['attributes'] = array_filter($rs, function($key) use ($idField, $jsonApiMetadata) {
             switch ($key) {
