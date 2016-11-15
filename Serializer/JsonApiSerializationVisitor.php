@@ -219,7 +219,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
                 ];
 
                 if ($relationship->isIncludedByDefault()) {
-                    if (null === $includeMaxDepth || $context->getDepth() < $includeMaxDepth) {
+                    if (null === $includeMaxDepth || $context->getDepth() <= $includeMaxDepth) {
                         if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                             $this->addIncluded($propertyMetadata, $context->accept($v));
                         }
@@ -229,12 +229,13 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         } else {
             $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($propertyData));
             $id = (string) $propertyMetadata->getIdValue($propertyData);
+
             $data = [
                 'type' => $propertyMetadata->getResource()->getType(),
                 'id' => $id
             ];
             if ($relationship->isIncludedByDefault()) {
-                if (null === $includeMaxDepth || $context->getDepth() < $includeMaxDepth) {
+                if (null === $includeMaxDepth || $context->getDepth() <= $includeMaxDepth) {
                     if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                         $this->addIncluded($propertyMetadata, $context->accept($propertyData));
                     }
@@ -353,11 +354,11 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
     }
 
     /**
-     * @param JsonApiClassMetadata $propertyMetadata
+     * @param JsonApiClassMetadata $jsonApiMetadata
      * @param string $id
      * @return boolean
      */
-    private function isRelationshipIncluded(JsonApiClassMetadata $propertyMetadata, $id)
+    private function isRelationshipIncluded(JsonApiClassMetadata $jsonApiMetadata, $id)
     {
         // filter out dupes
         foreach ($this->includedResources as $included) {
@@ -365,10 +366,10 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
                 $id === $included['id']
                 && $jsonApiMetadata->getResource()->getType() === $included['type']
             ) {
-                return false;
+                return true;
             }
         }
         
-        return true;
+        return false;
     }
 }
