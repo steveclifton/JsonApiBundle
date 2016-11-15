@@ -212,28 +212,32 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
             $data = [];
             foreach ($propertyData as $v) {
                 $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($v));
-                
+                $id = (string) $propertyMetadata->getIdValue($v);
                 $data[] = [
                     'type' => $propertyMetadata->getResource()->getType(),
-                    'id' => (string) $propertyMetadata->getIdValue($v)
+                    'id' => $id
                 ];
 
                 if ($relationship->isIncludedByDefault()) {
                     if (null === $includeMaxDepth || $context->getDepth() < $includeMaxDepth) {
-                        $this->addIncluded($propertyMetadata, $context->accept($v));
+                        if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
+                            $this->addIncluded($propertyMetadata, $context->accept($v));
+                        }
                     }
                 }
             }
         } else {
             $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($propertyData));
-
+            $id = (string) $propertyMetadata->getIdValue($propertyData);
             $data = [
                 'type' => $propertyMetadata->getResource()->getType(),
-                'id' => (string) $propertyMetadata->getIdValue($propertyData)
+                'id' => $id
             ];
             if ($relationship->isIncludedByDefault()) {
                 if (null === $includeMaxDepth || $context->getDepth() < $includeMaxDepth) {
-                    $this->addIncluded($propertyMetadata, $context->accept($propertyData));
+                    if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
+                        $this->addIncluded($propertyMetadata, $context->accept($propertyData));
+                    }
                 }
             }
         }
@@ -242,6 +246,8 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
         $this->data[$key] = $data;
     }
+
+    
 
     /**
      * {@inheritdoc}
@@ -252,10 +258,6 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         $jsonApiMetadata = $this->metadataFactory->getMetadataForClass(get_class($data));
 
         $rs = parent::endVisitingObject($metadata, $data, $type, $context);
-
-//        if ($context->getDepth() > 0) {
-//            return $rs;
-//        }
         
         if ($rs instanceof \ArrayObject) {
             $rs = [];
@@ -312,17 +314,6 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         if (!is_array($relationshipData) || !isset($relationshipData['id'])) {
             return;
         }
-        
-        // filter out dupes
-        foreach ($this->includedResources as $included) {
-            if (
-                $relationshipData['id'] === $included['id']
-                && $jsonApiMetadata->getResource()->getType() === $included['type']
-            ) {
-                return;
-            }
-        }
-
         $this->includedResources[] = $relationshipData;
     }
 
@@ -359,5 +350,25 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         }
 
         return false;
+    }
+
+    /**
+     * @param JsonApiClassMetadata $propertyMetadata
+     * @param string $id
+     * @return boolean
+     */
+    private function isRelationshipIncluded(JsonApiClassMetadata $propertyMetadata, $id)
+    {
+        // filter out dupes
+        foreach ($this->includedResources as $included) {
+            if (
+                $id === $included['id']
+                && $jsonApiMetadata->getResource()->getType() === $included['type']
+            ) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }
