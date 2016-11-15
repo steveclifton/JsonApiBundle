@@ -206,20 +206,23 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
         $propertyData = $metadata->getValue($data);
 
+        $contextDepthIgnoringCollections = count($context->getCurrentPath());
+
         if (null === $propertyData) {
             $data = null;
         } elseif (is_array($propertyData) || $propertyData instanceof \Traversable) {
             $data = [];
+            
             foreach ($propertyData as $v) {
                 $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($v));
                 $id = (string) $propertyMetadata->getIdValue($v);
+                
                 $data[] = [
                     'type' => $propertyMetadata->getResource()->getType(),
                     'id' => $id
                 ];
-
                 if ($relationship->isIncludedByDefault()) {
-                    if (null === $includeMaxDepth || $context->getDepth() <= $includeMaxDepth) {
+                    if (null === $includeMaxDepth || $contextDepthIgnoringCollections <= $includeMaxDepth) {
                         if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                             $this->addIncluded($propertyMetadata, $context->accept($v));
                         }
@@ -229,13 +232,12 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         } else {
             $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($propertyData));
             $id = (string) $propertyMetadata->getIdValue($propertyData);
-
             $data = [
                 'type' => $propertyMetadata->getResource()->getType(),
                 'id' => $id
             ];
             if ($relationship->isIncludedByDefault()) {
-                if (null === $includeMaxDepth || $context->getDepth() <= $includeMaxDepth) {
+                if (null === $includeMaxDepth || $contextDepthIgnoringCollections <= $includeMaxDepth) {
                     if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                         $this->addIncluded($propertyMetadata, $context->accept($propertyData));
                     }
