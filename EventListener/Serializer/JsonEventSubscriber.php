@@ -31,6 +31,7 @@ use Metadata\MetadataFactoryInterface;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Traversable;
 
@@ -238,7 +239,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
         $resourceIdName = $metadata->getResource()->getType() . 'Id';
         $params[$resourceIdName] = $this->getId($metadata, $object);
         $this->router->getContext()->setParameters($params);
-        $link = $this->router->generate($metadata->getResource()->getRoute());
+        $link = $this->router->generate($metadata->getResource()->getRoute(), [], UrlGeneratorInterface::ABSOLUTE_URL);
 
         return $link;
     }
