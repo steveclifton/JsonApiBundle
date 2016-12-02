@@ -99,6 +99,16 @@ class JsonApiResourceHandler implements SubscribingHandlerInterface
                     $relationshipType = $relationshipData['data']['type'];
                     $attributes[$serializedName] = ['id' => $relationshipId];
                 }
+            } else {
+                $jmsRelationshipMetadata = $jmsClassMetadata->propertyMetadata[$serializedName];
+                // set value to empty array if relationship not provided
+                if (in_array($jmsRelationshipMetadata->type['name'], [
+                    'ArrayCollection',
+                    'array',
+                    'Doctrine\Common\Collections\ArrayCollection'
+                ])) {
+                    $attributes[$serializedName] = [];
+                }
             }
         }
 
