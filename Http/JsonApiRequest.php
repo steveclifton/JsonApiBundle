@@ -94,12 +94,7 @@ class JsonApiRequest
         $sort = [];
         
         if (!empty($sortParam) && is_string($sortParam)) {
-            $fields = array_map('trim', explode(',', $sortParam));
-
-            foreach ($fields as $field) {
-                $key = ltrim($field, '-');
-                $sort[$key] = '-' === $field[0] ? 'DESC' : 'ASC';
-            }
+            $sort = array_map('trim', explode(',', $sortParam));
         }
 
         return $sort;
