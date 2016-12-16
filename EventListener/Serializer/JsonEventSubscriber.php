@@ -12,6 +12,7 @@
 namespace Mango\Bundle\JsonApiBundle\EventListener\Serializer;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Common\Util\ClassUtils;
 use JMS\Serializer\Context;
 use JMS\Serializer\DeserializationContext;
@@ -236,7 +237,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
         }
 
         $params['id'] = $this->getId($metadata, $object);
-        $resourceIdName = $metadata->getResource()->getType() . 'Id';
+        $resourceIdName = Inflector::camelize($metadata->getResource()->getType()) . 'Id';
         $params[$resourceIdName] = $this->getId($metadata, $object);
         $this->router->getContext()->setParameters($params);
         $link = $this->router->generate($metadata->getResource()->getRoute(), [], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -260,10 +261,10 @@ class JsonEventSubscriber implements EventSubscriberInterface
             $params = array_merge($params, $request->attributes->get('_route_params'));
         }
 
-        $primaryIdName = $primaryMetadata->getResource()->getType() . 'Id';
+        $primaryIdName = Inflector::camelize($primaryMetadata->getResource()->getType() . 'Id');
         $params[$primaryIdName] = $this->getId($primaryMetadata, $primaryObject);
 
-        $relationshipIdName = $relationshipMetadata->getResource()->getType() . 'Id';
+        $relationshipIdName = Inflector::camelize($relationshipMetadata->getResource()->getType() . 'Id');
         $params[$relationshipIdName] = $this->getId($relationshipMetadata, $relationshipObject);
 
         $this->router->getContext()->setParameters($params);
@@ -288,7 +289,7 @@ class JsonEventSubscriber implements EventSubscriberInterface
             $params = array_merge($params, $request->attributes->get('_route_params'));
         }
 
-        $primaryIdName = $primaryMetadata->getResource()->getType() . 'Id';
+        $primaryIdName = Inflector::camelize($primaryMetadata->getResource()->getType() . 'Id');
 
         $params[$primaryIdName] = $this->getId($primaryMetadata, $primaryObject);
 
