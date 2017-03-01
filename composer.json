@@ -1,5 +1,5 @@
 {
-    "name": "steffenbrem/json-api-bundle",
+    "name": "realestateconz/json-api-bundle",
     "description": "Integration of JSON API with Symfony2 using JMS Serializer (FOSRestBundle).",
     "keywords": [
         "rest",
