@@ -212,11 +212,11 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
             $data = null;
         } elseif (is_array($propertyData) || $propertyData instanceof \Traversable) {
             $data = [];
-            
+
             foreach ($propertyData as $v) {
                 $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($v));
                 $id = (string) $propertyMetadata->getIdValue($v);
-                
+
                 $data[] = [
                     'type' => $propertyMetadata->getResource()->getType(),
                     'id' => $id
@@ -250,7 +250,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         $this->data[$key] = $data;
     }
 
-    
+
 
     /**
      * {@inheritdoc}
@@ -261,7 +261,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         $jsonApiMetadata = $this->metadataFactory->getMetadataForClass(get_class($data));
 
         $rs = parent::endVisitingObject($metadata, $data, $type, $context);
-        
+
         if ($rs instanceof \ArrayObject) {
             $rs = [];
             $this->setRoot($rs);
@@ -280,8 +280,8 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         $idField = $jsonApiMetadata->getIdField();
 
         $result['id'] = isset($rs[$idField]) ? (string) $rs[$idField] : null;
-        
-        $result['attributes'] = array_filter($rs, function($key) use ($idField, $jsonApiMetadata) {
+
+        $result['attributes'] = array_filter($rs, function ($key) use ($idField, $jsonApiMetadata) {
             switch ($key) {
                 case $idField:
                 case 'relationships':
@@ -296,7 +296,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
             return true;
         }, ARRAY_FILTER_USE_KEY);
-        
+
         if (isset($rs['relationships'])) {
             $result['relationships'] = $rs['relationships'];
         }
@@ -317,6 +317,21 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         if (!is_array($relationshipData) || !isset($relationshipData['id'])) {
             return;
         }
+
+        $existingRelationship = array_filter(
+            $this->includedResources,
+            function ($relationship) use ($relationshipData) {
+                return
+                    $relationship['id'] === $relationshipData['id'] &&
+                    $relationship['type'] === $relationshipData['type']
+                ;
+            }
+        );
+
+        if (!empty($existingRelationship)) {
+            return;
+        }
+
         $this->includedResources[] = $relationshipData;
     }
 
@@ -371,7 +386,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
                 return true;
             }
         }
-        
+
         return false;
     }
 }
