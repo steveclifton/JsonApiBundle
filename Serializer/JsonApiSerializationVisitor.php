@@ -78,6 +78,7 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
      */
     public function prepare($root)
     {
+        $this->includedResources = [];
         if (is_array($root) && array_key_exists('data', $root)) {
             $data = $root['data'];
         } else {
