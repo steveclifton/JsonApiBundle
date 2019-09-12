@@ -45,7 +45,7 @@ class OffsetPaginatedRepresentation extends ArrayCollection
      * @param int $totalResults
      * @param string $self
      */
-    public function __construct(array $elements = [], $offset, $limit, $totalResults, $self)
+    public function __construct(array $elements = [], $offset, $limit, $totalResults, $self = null)
     {
         parent::__construct($elements);
         
@@ -57,10 +57,14 @@ class OffsetPaginatedRepresentation extends ArrayCollection
 
     /**
      * @param integer $page
-     * @return string
+     * @return null|string
      */
     public function getUriForPage($page)
     {
+        if ($this->self === null) {
+            return null;
+        }
+
         return $this->self . '?offset=' . ($this->limit * $page - $this->limit) . '&limit=' . $this->limit;
     }
 

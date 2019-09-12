@@ -91,12 +91,14 @@ class OffsetPaginatedRepresentationHandler implements SubscribingHandlerInterfac
             'total-results' => $representation->getTotalResults()
         );
 
-        $root['links'] = array(
-            'first' => $representation->getUriForPage(1),
-//            'last' => $representation->getUriForPage($representation->getPages()),
-//            'next' => $representation->hasNextPage() ? $representation->getUriForPage($representation->getNextPage()) : null,
-//            'previous' => $representation->hasPreviousPage() ? $representation->getUriForPage($representation->getPreviousPage()) : null
-        );
+        if ($representation->getUriForPage(1) !== null) {
+            $root['links'] = [
+                'first' => $representation->getUriForPage(1),
+//                'last' => $representation->getUriForPage($representation->getPages()),
+//                'next' => $representation->hasNextPage() ? $representation->getUriForPage($representation->getNextPage()) : null,
+//                'previous' => $representation->hasPreviousPage() ? $representation->getUriForPage($representation->getPreviousPage()) : null
+            ];
+        }
 
         $visitor->setRoot($root);
 
