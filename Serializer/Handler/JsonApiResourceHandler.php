@@ -56,7 +56,8 @@ class JsonApiResourceHandler implements SubscribingHandlerInterface
         Context $context
     )
     {
-        $resourceName = $data['type'];
+        $resourceName = str_replace('-', '_', $data['type']);
+
         $classMetadata = $this->jsonapiMetadataFactory->getMetadataForResource($resourceName);
 
         if (null === $classMetadata) {
