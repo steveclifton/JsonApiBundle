@@ -80,6 +80,8 @@ class OffsetPaginatedRepresentationHandler implements SubscribingHandlerInterfac
         Context $context
     )
     {
+        $visitor->setIncludeTypes($representation->getIncludeTypes());
+
         // serialize items
         $data = $context->accept($representation->toArray());
 
