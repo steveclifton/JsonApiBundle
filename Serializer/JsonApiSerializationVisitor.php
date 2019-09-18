@@ -44,6 +44,8 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
 
     private $includedResources = [];
 
+    private $includeTypes = [];
+
     /**
      * @param PropertyNamingStrategyInterface $propertyNamingStrategy
      * @param MetadataFactoryInterface $metadataFactory
@@ -217,12 +219,13 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
             foreach ($propertyData as $v) {
                 $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($v));
                 $id = (string) $propertyMetadata->getIdValue($v);
+                $resourceType = $propertyMetadata->getResource()->getType();
 
                 $data[] = [
-                    'type' => $propertyMetadata->getResource()->getType(),
+                    'type' => $resourceType,
                     'id' => $id
                 ];
-                if ($relationship->isIncludedByDefault()) {
+                if ($relationship->isIncludedByDefault() || in_array($resourceType, $this->includeTypes)) {
                     if (null === $includeMaxDepth || $contextDepthIgnoringCollections <= $includeMaxDepth) {
                         if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                             $this->addIncluded($propertyMetadata, $context->accept($v));
@@ -233,11 +236,13 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         } else {
             $propertyMetadata = $this->metadataFactory->getMetadataForClass(get_class($propertyData));
             $id = (string) $propertyMetadata->getIdValue($propertyData);
+            $resourceType = $propertyMetadata->getResource()->getType();
+
             $data = [
-                'type' => $propertyMetadata->getResource()->getType(),
+                'type' => $resourceType,
                 'id' => $id
             ];
-            if ($relationship->isIncludedByDefault()) {
+            if ($relationship->isIncludedByDefault() || in_array($resourceType, $this->includeTypes)) {
                 if (null === $includeMaxDepth || $contextDepthIgnoringCollections <= $includeMaxDepth) {
                     if (!$this->isRelationshipIncluded($propertyMetadata, $id)) {
                         $this->addIncluded($propertyMetadata, $context->accept($propertyData));
@@ -389,5 +394,12 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
         }
 
         return false;
+    }
+
+    /**
+     * @param Array $includeTypes
+     */
+    public function setIncludeTypes($includeTypes) {
+        $this->includeTypes = $includeTypes;
     }
 }

@@ -37,6 +37,11 @@ class OffsetPaginatedRepresentation extends ArrayCollection
      * @var string Self Link
      */
     protected $self;
+
+    /**
+     * @var array
+     */
+    protected $includeTypes;
     
     /**
      * @param array|Traversable $elements
@@ -45,7 +50,7 @@ class OffsetPaginatedRepresentation extends ArrayCollection
      * @param int $totalResults
      * @param string $self
      */
-    public function __construct(array $elements = [], $offset, $limit, $totalResults, $self = null)
+    public function __construct(array $elements = [], $offset, $limit, $totalResults, $self = null, $includeTypes = [])
     {
         parent::__construct($elements);
         
@@ -53,6 +58,7 @@ class OffsetPaginatedRepresentation extends ArrayCollection
         $this->limit = $limit;
         $this->totalResults = $totalResults;
         $this->self = $self;
+        $this->includeTypes = $includeTypes;
     }
 
     /**
@@ -163,5 +169,13 @@ class OffsetPaginatedRepresentation extends ArrayCollection
         if ($this->hasPreviousPage()) {
             return $this->page - 1;
         }
+    }
+    
+    /**
+     * @return array
+     */
+    public function getIncludeTypes()
+    {
+        return $this->includeTypes;
     }
 }
