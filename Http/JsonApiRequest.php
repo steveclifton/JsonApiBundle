@@ -13,6 +13,7 @@ namespace Mango\Bundle\JsonApiBundle\Http;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Inflector\Inflector;
 
 /**
  * JsonApi Request
@@ -59,8 +60,15 @@ class JsonApiRequest
             $included = array_map('trim', explode(',', $includeParam));
             $included = array_filter($included);
         }
-        
-        return $included;
+        $newIncluded = [];
+        foreach ($included as $item) {
+            $newIncluded[] = $item;
+            $newIncluded[] = Inflector::singularize($item);
+        }
+
+        $newIncluded = array_unique($newIncluded);
+
+        return $newIncluded;
     }
 
     /**
