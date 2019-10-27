@@ -52,8 +52,8 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
      * @param PropertyNamingStrategyInterface $propertyNamingStrategy
      * @param AccessorStrategyInterface $accessorStrategy
      * @param MetadataFactoryInterface $metadataFactory
-     * @param $showVersionInfo
-     * @param null $includeMaxDepth
+     * @param bool $showVersionInfo
+     * @param int $includeMaxDepth
      */
     public function __construct(
         PropertyNamingStrategyInterface $propertyNamingStrategy,
