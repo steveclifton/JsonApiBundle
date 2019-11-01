@@ -11,6 +11,7 @@
 
 namespace Mango\Bundle\JsonApiBundle\Serializer;
 
+use JMS\Serializer\Accessor\AccessorStrategyInterface;
 use JMS\Serializer\Context;
 use JMS\Serializer\JsonSerializationVisitor;
 use JMS\Serializer\Metadata\ClassMetadata;
@@ -47,18 +48,21 @@ class JsonApiSerializationVisitor extends JsonSerializationVisitor
     private $includeTypes = [];
 
     /**
+     * JsonApiSerializationVisitor constructor.
      * @param PropertyNamingStrategyInterface $propertyNamingStrategy
+     * @param AccessorStrategyInterface $accessorStrategy
      * @param MetadataFactoryInterface $metadataFactory
      * @param bool $showVersionInfo
-     * @param integer $includeMaxDepth
+     * @param int $includeMaxDepth
      */
     public function __construct(
         PropertyNamingStrategyInterface $propertyNamingStrategy,
+        AccessorStrategyInterface $accessorStrategy,
         MetadataFactoryInterface $metadataFactory,
         $showVersionInfo,
         $includeMaxDepth = null
     ) {
-        parent::__construct($propertyNamingStrategy);
+        parent::__construct($propertyNamingStrategy, $accessorStrategy);
 
         $this->metadataFactory = $metadataFactory;
         $this->showVersionInfo = $showVersionInfo;
